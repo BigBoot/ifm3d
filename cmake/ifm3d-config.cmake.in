@@ -1,0 +1,27 @@
+@PACKAGE_INIT@
+
+message(STATUS "Checking available ifm3d components:")
+
+get_filename_component(_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+string(LENGTH "${_DIR}/ifm3d-" _PREFIX_LEN)
+string(LENGTH "-targets.cmake" _SUFFIX_LEN)
+
+file(GLOB COMPONENT_FILES "${_DIR}/ifm3d-*-targets.cmake")
+foreach(f ${COMPONENT_FILES})
+  string(LENGTH "${f}" _FILENAME_LEN)
+  math(EXPR _LEN "${_FILENAME_LEN}-${_SUFFIX_LEN}-${_PREFIX_LEN}")
+  string(SUBSTRING ${f} ${_PREFIX_LEN} ${_LEN} _MODULE)
+  include(${f})
+  message(STATUS "-> Found component ${_MODULE}")
+  set(ifm3d_ifm3d_${_MODULE}_shared_FOUND ON)
+endforeach()
+
+foreach(module @EXPORTED_MODULES@)
+
+endforeach(module)
+
+find_package(glog QUIET CONFIG NAMES google-glog glog)
+find_package(xmlrpc-c QUIET CONFIG)
+
+check_required_components(ifm3d)

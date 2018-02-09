@@ -47,6 +47,7 @@ if(WIN32)
 endif(WIN32)
 
 install(TARGETS ifm3d_camera_shared
+  EXPORT ifm3d-camera-targets
   RUNTIME DESTINATION ${_bin} COMPONENT camera
   LIBRARY DESTINATION ${_lib} COMPONENT camera
   ARCHIVE DESTINATION ${_lib} COMPONENT camera

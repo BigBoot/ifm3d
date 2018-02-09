@@ -33,6 +33,7 @@ if(WIN32)
 endif(WIN32)
 
 install(TARGETS ifm3d_pcicclient_shared
+  EXPORT ifm3d-pcicclient-targets
   RUNTIME DESTINATION ${_bin} COMPONENT pcicclient
   LIBRARY DESTINATION ${_lib} COMPONENT pcicclient
   ARCHIVE DESTINATION ${_lib} COMPONENT pcicclient

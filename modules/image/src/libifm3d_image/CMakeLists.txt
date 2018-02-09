@@ -34,6 +34,7 @@ if(WIN32)
 endif(WIN32)
 
 install(TARGETS ifm3d_image_shared
+  EXPORT ifm3d-image-targets
   RUNTIME DESTINATION ${_bin} COMPONENT image
   LIBRARY DESTINATION ${_lib} COMPONENT image
   ARCHIVE DESTINATION ${_lib} COMPONENT image

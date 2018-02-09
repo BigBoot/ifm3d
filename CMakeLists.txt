@@ -59,10 +59,12 @@ endif(WIN32)
 
 # Build sub-modules
 add_subdirectory(modules/camera)
+list(APPEND EXPORTED_MODULES camera)
 
 if(BUILD_MODULE_FRAMEGRABBER)
   add_definitions(-DBUILD_MODULE_FRAMEGRABBER=ON)
   add_subdirectory(modules/framegrabber)
+  list(APPEND EXPORTED_MODULES framegrabber)
 endif()
 if(BUILD_MODULE_IMAGE)
   # `image` relies on `framegrabber`, in the event the user
@@ -72,9 +74,11 @@ if(BUILD_MODULE_IMAGE)
   # confuse the end-user.
   add_definitions(-DBUILD_MODULE_IMAGE=ON)
   add_subdirectory(modules/image)
+  list(APPEND EXPORTED_MODULES image)
 endif()
 if(BUILD_MODULE_PCICCLIENT)
   add_subdirectory(modules/pcicclient)
+  list(APPEND EXPORTED_MODULES pcicclient)
 endif()
 if(BUILD_MODULE_TOOLS)
   add_subdirectory(modules/tools)
@@ -142,3 +146,43 @@ add_custom_target(repackage
   )
 
 include(CPack)
+
+# Generate CMake Package Configuration File
+include (CMakePackageConfigHelpers)
+configure_package_config_file (cmake/ifm3d-config.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/ifm3d-config.cmake
+  INSTALL_DESTINATION ${lib}/cmake/ifm3d
+  )
+
+write_basic_package_version_file (ifm3d-config-version.cmake
+  VERSION ${IFM3D_VERSION_MAJOR}.${IFM3D_VERSION_MINOR}.${IFM3D_VERSION_PATCH}}
+  COMPATIBILITY SameMajorVersion
+  )
+
+export (PACKAGE ifm3d)
+
+foreach(module ${EXPORTED_MODULES})
+  export (TARGETS ifm3d_${module}_shared
+    NAMESPACE ifm3d::
+    FILE ifm3d-${module}-targets.cmake
+    )
+endforeach(module)
+
+
+if (BUILD_SDK_PKG)
+  install (FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/ifm3d-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/ifm3d-config-version.cmake
+    DESTINATION ${_lib}/cmake/ifm3d
+    COMPONENT camera
+    )
+
+  foreach(module ${EXPORTED_MODULES})
+    install (EXPORT ifm3d-${module}-targets
+      NAMESPACE ifm3d::
+      DESTINATION ${_lib}/cmake/ifm3d
+      COMPONENT ${module}
+      )
+  endforeach(module)
+
+endif(BUILD_SDK_PKG)
